@@ -1,0 +1,62 @@
+#激活密钥
+cdk: ZEFY-HQ0H-86IV-PYDD
+
+#排在第一个的为默认国家
+nations:
+  - '无国籍'
+  - '玫瑰骑士'
+  - '坏人公司'
+  - '贸易公司'
+
+#玩家头顶名称，支持PlaceholderAPI（含玩家名字在内最多16个字符，省略多余部分）
+tag:
+  #一一对应上方国家         玩家ID
+  无国籍: '&f[&a无国籍&f]&r{PlayerName}'
+  玫瑰骑士: '&f[&a玫瑰骑士&f]&r{PlayerName}'
+  坏人公司: '&f[&a坏人公司&f]&r{PlayerName}'
+  贸易公司: '&f[&a贸易公司&f]&r{PlayerName}'
+
+#每多少个tick（20ticks=1s）刷新一次排行榜（异步刷新）
+auto-update-rank: 72000
+
+#排名名称（向下继承）
+rank-name:
+  1: 公爵
+  2: 侯爵
+  3: 伯爵
+  5: 子爵
+  #请给个大数字，不然有可能出错
+  1000000: 平民
+
+daily-reward:
+  #几点刷新（0~23）点
+  update-time: 0
+  #可领取低等级礼包
+  low-level-reward: true
+  #向下继承
+  无国籍:
+    平民:
+      #Player+OP 支持PAPI
+      - 'say 无国籍平民'
+  玫瑰骑士:
+    平民:
+      - 'say 玫瑰骑士平民'
+  坏人公司:
+    平民:
+      - 'say 坏人公司平民'
+  贸易公司:
+    平民:
+      - 'say 贸易公司平民'
+
+nation-reward:
+  update-time: 0
+  #向下继承
+  1:
+    - 'say 排名第一的奖励'
+  2:
+    - 'say 排名第二的奖励'
+  3:
+    - 'say 排名第三的奖励'
+  #最后一名
+  1000:
+    - 'say 你们太弱鸡了'
