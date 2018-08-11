@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * @author mcard
  */
-public class NationApi {
+public class NationAPI {
 
     private static Plugin plugin;
     private static long lastUpdateTime = System.currentTimeMillis();
@@ -47,7 +47,7 @@ public class NationApi {
             //对数组进行排序
             Arrays.sort(rank.toArray(new NationPlayer[rank.size()]));
             //加入到Map中
-            NationApi.rank.put(s, rank);
+            NationAPI.rank.put(s, rank);
         }
     }
 
@@ -130,7 +130,6 @@ public class NationApi {
                 return s;
             }
         }
-        setPlayerNation(player, getPlayerDefaultNation());
         return getPlayerDefaultNation();
     }
 
@@ -191,7 +190,7 @@ public class NationApi {
     public static void setPlayerNation(OfflinePlayer player, String name) {
         initialize();
         //remove
-        File f = new File(plugin.getDataFolder(), getPlayerNation(player));
+        File f = new File(plugin.getDataFolder(), getPlayerNation(player) + ".yml");
         if (f.exists()) {
             try {
                 f.createNewFile();
@@ -267,6 +266,7 @@ public class NationApi {
      * @return 国家排名
      */
     public static int getNationRank(String name) {
+        initialize();
         int bigger = 0;
         int np = getNationPoint(name);
         for (String s : getNationList()) {
@@ -284,6 +284,7 @@ public class NationApi {
      * @return 国家所有成员点数和
      */
     public static int getNationPoint(String name) {
+        initialize();
         int all = 0;
         for (NationPlayer np : getRank().get(name)) {
             all += np.getPoint();
@@ -297,7 +298,8 @@ public class NationApi {
      * @return 国家名集合
      */
     public static List<String> getNationList() {
-        return main.getStringList("nation");
+        initialize();
+        return main.getStringList("nations");
     }
 
     /**
@@ -307,6 +309,7 @@ public class NationApi {
      * @return
      */
     public static List<OfflinePlayer> getNationPlayerList(String name) {
+        initialize();
         File f = new File(plugin.getDataFolder(), name + ".yml");
         if (!f.exists()) {
             try {
@@ -323,5 +326,143 @@ public class NationApi {
         return players;
     }
 
+    /**
+     * 获取玩家称号
+     *
+     * @param player 玩家名称
+     * @return 玩家称号
+     */
+    public static String getPlayerTag(OfflinePlayer player) {
+        initialize();
+        int rank = getPlayerRankInNation(player);
+        for (String key : main.getConfigurationSection("rank-name." + getPlayerNation(player)).getKeys(false)) {
+            if (rank <= Integer.parseInt(key)) {
+                return main.getString("rank-name." + getPlayerNation(player) + "." + key);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取玩家每日礼包
+     *
+     * @param player 玩家
+     * @return 每日礼包执行的指令
+     */
+    public static List<String> getPlayerRewardCommand(OfflinePlayer player) {
+        initialize();
+        return main.getStringList("daily-reward." + getPlayerNation(player) + "." + getPlayerTag(player));
+    }
+
+    /**
+     * 获取国家每日礼包
+     *
+     * @param name 国家名
+     * @return 每日礼包执行的指令
+     */
+    public static List<String> getNationRewardCommand(String name) {
+        initialize();
+        int rank = getNationRank(name);
+        for (String key : main.getConfigurationSection("nation-reward").getKeys(false)) {
+            if ("update-time".equalsIgnoreCase(key)) {
+                continue;
+            }
+            if (rank <= Integer.parseInt(key)) {
+                return main.getStringList("nation-reward." + key);
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * 判断玩家是否已经领取了今日礼包
+     *
+     * @param player
+     * @return 是否已领取
+     */
+    public static boolean isPlayerGetTodayReward(OfflinePlayer player) {
+        initialize();
+        File f = new File(plugin.getDataFolder(), "rewards.yml");
+        if (!createNewFile(f)) {
+            return true;
+        }
+        YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
+        long last = c.getLong("daily." + player.getName(), 0L);
+        //                                       毫秒   秒   分   时
+        if (System.currentTimeMillis() - last >= 1000 * 60 * 60 * 24) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isPlayerGetNationReward(OfflinePlayer player) {
+        initialize();
+        File f = new File(plugin.getDataFolder(), "rewards.yml");
+        if (!createNewFile(f)) {
+            return true;
+        }
+        YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
+        long last = c.getLong("nation." + player.getName(), 0L);
+        //                                       毫秒   秒   分   时
+        if (System.currentTimeMillis() - last >= 1000 * 60 * 60 * 24) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 设置玩家每日礼包状态
+     *
+     * @param player 玩家
+     * @param time   如果时间大于 1000 * 60 * 60 * 24（即一天的毫秒数） 则为未领取，否则为已经领取
+     */
+    public static void setPlayerDailyRewardType(OfflinePlayer player, long time) {
+        initialize();
+        File f = new File(plugin.getDataFolder(), "rewards.yml");
+        if (!createNewFile(f)) {
+            return;
+        }
+        YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
+        c.set("daily." + player.getName(), time);
+        try {
+            c.save(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置玩家国家每日礼包状态
+     *
+     * @param player 玩家
+     * @param time   如果时间大于 1000 * 60 * 60 * 24（即一天的毫秒数） 则为未领取，否则为已经领取
+     */
+    public static void setPlayerNationRewardType(OfflinePlayer player, long time) {
+        initialize();
+        File f = new File(plugin.getDataFolder(), "rewards.yml");
+        if (!createNewFile(f)) {
+            return;
+        }
+        YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
+        c.set("nation." + player.getName(), time);
+        try {
+            c.save(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean createNewFile(File f) {
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+                //为了防止反复刷，即使无法保存，false
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

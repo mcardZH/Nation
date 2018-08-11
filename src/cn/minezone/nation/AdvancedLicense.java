@@ -2,7 +2,6 @@ package cn.minezone.nation;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.chrono.HijrahEra;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -51,7 +50,7 @@ public class AdvancedLicense {
         log(0, "连接到授权服务器...");
         ValidationType vt = isValid();
         if (vt == ValidationType.VALID) {
-            log(1, "密钥错误!");
+            log(1, "密钥有效!");
             log(0, "[]==========[授权管理系统]==========[]");
             return true;
         } else {
