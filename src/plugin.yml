@@ -1,6 +1,6 @@
 name: Nation
 main: cn.minezone.nation.NationPlugin
-version: 1.0-Beta
+version: 1.2-Beta
 
 commands:
   nation:

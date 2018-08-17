@@ -1,0 +1,16 @@
+#Use §
+help:
+- '§a----------[Nation By.mcard]----------'
+- '§b/nation kit §cGet player rank Kit'
+- '§b/nation nation §cGet nation rank kit'
+- '§b/nation rank §cSee your rank in your team'
+- '§b/nation join [nation name] §cJoin a nation(You cant change your nation)'
+- '§b/nation list §cSee the rank and the point of all nations'
+
+already-get: '§cYou have already got the kit today!'
+rank: '§aYou are rank is {rank}'
+cant-change: '§cOnly default nation member can change nation!'
+nation-no-exist: '§cYou are input nation cant be find!'
+join-success: '§aJoin success!'
+list: 'nation:{nation},rank:{rank},AllPoint:{allpoint}'
+arg-error: '§cYour arguments arw wrong!'

@@ -32,11 +32,12 @@ public class NationPlugin extends JavaPlugin {
         //启用Runnable                                                                     一小时一次
         new RankUpdateRunnable().runTaskTimerAsynchronously(this, 0, 20 * 60 * 60);
         new RewardUpdateRunnable(this).runTaskTimerAsynchronously(this, 0, 20 * 60 * 30);
-        //new UpdatePlayerTag().runTaskTimer(this, 0, 20);
+        new UpdatePlayerTag().runTaskTimer(this, 0, 20);
         //update
         NationAPI.updateRank();
         //register listener
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        Bukkit.getPluginManager().registerEvents(new EventListener(), this);
         //hook
         new PlaceholderHook(this).hook();
     }
